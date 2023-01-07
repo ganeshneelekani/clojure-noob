@@ -138,39 +138,75 @@
   ([x y & args]
    (custom-concat-reduce x (cons y args))))
 
-
-(defn take-fn
-  "Returns a lazy sequence of the first n items in coll, or all items if
-  there are fewer than n.  Returns a stateful transducer when
-  no collection is provided."
-  {:added "1.0"
-   :static true}
-  ([n]
-   (println "---n--" n)
-   (fn [rf]
-     (println "---rf--"rf)
-     (let [nv (volatile! n)]
-       (fn
-         ([] (rf))
-         ([result] (rf result))
-         ([result input]
-          (let [n @nv
-                nn (vswap! nv dec)
-                result (if (pos? n)
-                         (rf result input)
-                         result)]
-            (if (not (pos? nn))
-              (ensure-reduced result)
-              result)))))))
-  ([n coll]
-   (lazy-seq
-    (when (pos? n)
-      (when-let [s (seq coll)]
-        (cons (first s) (take (dec n) (rest s))))))))
-
-
 (defn custom-flatten
   [x]
   (reduce #(conj %1 %2) [] x))
 
+(defn custom-take 
+  [n coll]
+  (if (pos? n)
+    (lazy-seq (my-reduce (fn [x coll]
+                           (loop [result x
+                                  number n
+                                  remaining coll]
+                             (if (= number 0)
+                               result
+                               (recur (conj result (first remaining)) 
+                                      (dec number) (rest coll))))) [] coll))))
 
+(defn custom-assoc
+  [m k v & kvs]
+  (let [result (assoc m k v)]
+    (if (next kvs)
+      (recur result (first kvs) (second kvs) (nnext kvs))
+      result)))
+
+
+(defmacro custom-when
+  [test & body]
+     (println body)
+    (list 'if test (cons 'do body)))
+
+(defmacro custom-cond
+  [& clauses]
+  (when clauses
+    (list 'if (first clauses) 
+          (if (second clauses)
+              (second clauses))
+          (cons 'cond (nnext clauses)))))
+
+(defn rep [n]
+  (cons n (lazy-seq (rep n))))
+
+(defn custom-some
+  [pred coll]
+  (when-let [s (seq coll)]
+    (or (pred (first s)) (recur pred (next s)))))
+
+(defn custom-merge
+  [& maps]
+  (my-reduce #(conj (or %1 {}) %2) maps))
+
+(defn merge-with-custom
+  [f & maps]
+  (when (some identity maps)
+    (my-reduce (fn [m1 m2]
+                 (my-reduce (fn [m e]
+                              (let [k (key e) v (val e)]
+                                (if (contains? m k)
+                                  (assoc m k (f (get m k) v))
+                                  (assoc m k v)))) 
+                            (or m1 {}) 
+                            (seq m2))) 
+               maps)))
+
+(defn custom-interleave
+  ([coll]
+   (seq coll))
+  ([coll & colls]
+   (flatten (loop [result []
+                   colls (conj colls coll)]
+              (if (empty? (first colls))
+                result
+                (recur (conj result (mapv first colls)) 
+                       (map rest colls)))))))

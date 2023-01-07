@@ -106,3 +106,11 @@
      (custom-map (partial apply f)
                  (partition (count colls)
                             (apply interleave colls))))))
+
+(defn custom-every?
+  [pred coll]
+  (cond
+    (nil? (seq coll)) true
+    (pred (first coll)) (recur pred (next coll))
+    :else false))
+

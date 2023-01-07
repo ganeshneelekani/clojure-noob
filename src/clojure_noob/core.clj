@@ -42,13 +42,10 @@
 (def dec9 (fn[]
             (dec-maker 10)))
 
-
 (defn mapset [f coll]
   (set (for [x coll]
          (f x))))
  
-
-
 (def asym-hobbit-body-parts [{:name "head" :size 3}
                              {:name "left-eye" :size 1}
                              {:name "left-ear" :size 1}
@@ -260,16 +257,10 @@
       xs
       (recur ys))))
 
-
 (defn reverse-string [args]
   (apply str (my-reduce conj () args)))
 
 ;; Reverse number
-
-;; remainder = number % 10
-;; reverse = reverse * 10 +remainder
-;; number = number /10 
-
 (defn reverse-number [args]
   (loop [reverse 0
          number args]
@@ -278,3 +269,13 @@
       (recur (+ (mod number 10) (* 10 reverse)) 
              (quot number 10)))))
 
+
+(def integ [1, 10, 2, 5, 6, 3])
+
+(defn highest-product-made [coll]
+  (->> coll
+      (sort >)
+      (take 3)
+      (apply *)))
+
+(highest-product-made [1, 10, 2, 5, 6, 3])
