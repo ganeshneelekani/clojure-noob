@@ -1,6 +1,7 @@
 (ns clojure-noob.core
   (:import [java.util Stack Date])
-  (:gen-class))
+  (:gen-class) 
+  (:require [clojure.string :as string]))
   
 
 (defn -main
@@ -279,3 +280,24 @@
       (apply *)))
 
 (highest-product-made [1, 10, 2, 5, 6, 3])
+
+(defn find-number-of-occurance[string]
+  (let [split (clojure.string/split string #"")]
+    (reduce (fn [result str]
+              (if (get result str)
+                (assoc result str (inc (get result str)))
+                (assoc result str 1)))
+            {}
+            split)))
+
+
+(defn fact [number]
+  (if (= number 1)
+    number
+    (* number (fact (- number 1)))))
+
+(defn fibo-example
+  ([]
+   (fibo-example 0 1))
+  ([a b]
+   (cons  a (lazy-seq (fibo-example b (+ a b))))))

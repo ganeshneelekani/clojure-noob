@@ -210,3 +210,47 @@
                 result
                 (recur (conj result (mapv first colls)) 
                        (map rest colls)))))))
+
+(defn foo [x]
+  (if (< x 0)
+    (println "done")
+    #(foo (do (println :x x) (dec x)))))
+
+(defn custom-trampoline
+  ([f]
+   (let [ret (f)]
+     (if (fn? ret)
+       (recur ret)
+       ret)))
+  ([f & args]
+   (custom-trampoline #(apply f args))))
+
+ (defn myfunc [a] (println "doing some work") (+ a 10))
+
+(defn custom-memoize
+  [f]
+  (let [mem (atom {})]
+    (fn [& args]
+      (if-let [e (find @mem args)]
+        (val e)
+        (let [ret (apply f args)]
+          (swap! mem assoc args ret)
+          ret)))))
+
+(defn custom-group-by
+  [f coll]
+  (my-reduce 
+   (fn [ret x]
+     (let [k (f x)]
+       (assoc ret k (conj (get ret k []) x)))
+     )
+   {} 
+   coll))
+
+
+(defn reverse-number[number]
+  (loop [reverse 0
+         number number]
+    (if (= 0 number)
+      reverse
+      (recur (+ (mod number 10) (* 10 reverse)) (quot number 10)))))
