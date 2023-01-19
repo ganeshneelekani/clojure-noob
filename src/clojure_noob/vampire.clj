@@ -114,3 +114,8 @@
     (pred (first coll)) (recur pred (next coll))
     :else false))
 
+(defn best [f xs]
+  (reduce #(if (f %1 %2) %1 %2) xs))
+
+(defn beget [this proto]
+  (assoc this ::prototype proto))

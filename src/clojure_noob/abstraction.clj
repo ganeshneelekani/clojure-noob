@@ -55,8 +55,36 @@
                (str name " and " age)))
 
 
+(defprotocol FIXO
+  (fixo-push [fixo value])
+  (fixo-pop [fixo])
+  (fixo-peek [fixo]))
+
+(defprotocol FIXO1
+  (fixo-push [fixo value])
+  (fixo-pop [fixo])
+  (fixo-peek [fixo]))
+
+(extend-type java.lang.String
+  FIXO
+  (fixo-push [vector value]
+    (str "as "value)))
+
+(extend-type clojure.lang.IPersistentVector
+  FIXO
+  (fixo-push [vector value]
+    value))
+(extend-type clojure.lang.IPersistentVector
+  FIXO1
+  (fixo-push [vector value]
+    value))
+
+(defprotocol Fun-Time 
+  (drinky-drinky [_]))
 
 
-
+(defrecord Someone [nick-name preferred-drink]
+  Fun-Time
+  (drinky-drinky [_] (str nick-name "(having " preferred-drink "): uuumm")))
 
 

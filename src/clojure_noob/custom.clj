@@ -254,3 +254,40 @@
     (if (= 0 number)
       reverse
       (recur (+ (mod number 10) (* 10 reverse)) (quot number 10)))))
+
+
+(defn my-reduce
+  ([f initial coll]
+   (loop [result initial
+          remaining coll]
+     (if (empty? remaining)
+       result
+       (recur (f result (first remaining)) (rest remaining)))))
+  ([f [head & tail]]
+   (my-reduce f head tail)))
+
+(defn- swap-numbers [ys x]
+  (if-let [y (peek ys)]
+    (if (< y x)
+      (conj (pop ys) x y)
+      (conj ys x))
+    [x]))
+
+(defn bubble-sort [xs]
+  (let [ys (my-reduce swap-numbers [] xs)]
+    (if (= xs ys)
+      xs
+      (recur ys))))
+
+(defn fact [number]
+  (if (= number 1)
+    number
+    (* number (fact (- number 1)))))
+
+(defn fibo-example
+  ([]
+   (fibo-example 0 1))
+  ([a b]
+   (cons  a (lazy-seq (fibo-example b (+ a b))))))
+
+
