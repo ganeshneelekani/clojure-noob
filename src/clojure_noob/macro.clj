@@ -114,21 +114,23 @@ is good code:" good)))
 
 (defn -occurance [input]
   (let [split    (clojure.string/split input #"")
-        str-atom (atom "")
+        str-atom (atom (first split))
         cnt      (atom 1)
         acc      (atom [])
         red (reduce (fn [_ v]
+                      (reset! str-atom v)
                       (add-watch str-atom :watcher
                                  (fn [_ _ prev curr]
                                    (when (= prev curr)
                                      (swap! cnt inc))
 
                                    (when-not (= prev curr)
-                                     (swap! acc conj (str @cnt curr))
+                                     (swap! acc conj (str @cnt prev))
                                      (reset! cnt 1))))
-                      (reset! str-atom v)
+                      
                       acc)
                     []
-                    split)]
-    (apply str (apply concat @red)))) 
+                   split)]
+    (apply str (apply concat @red))))
+  
 
