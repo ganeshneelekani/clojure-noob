@@ -1,4 +1,5 @@
-(ns clojure-noob.macro)
+(ns clojure-noob.macro 
+  (:require [clojure.string :as string]))
 
 (defn criticize-code 
   [criticism code]
@@ -108,3 +109,26 @@ is good code:" good)))
   [to-validate message-validator-pairs]
   (map first (filter #(not ((second %) to-validate))
                      (partition 2 message-validator-pairs))))
+
+
+
+(defn -occurance [input]
+  (let [split    (clojure.string/split input #"")
+        str-atom (atom "")
+        cnt      (atom 1)
+        acc      (atom [])
+        red (reduce (fn [_ v]
+                      (add-watch str-atom :watcher
+                                 (fn [_ _ prev curr]
+                                   (when (= prev curr)
+                                     (swap! cnt inc))
+
+                                   (when-not (= prev curr)
+                                     (swap! acc conj (str @cnt curr))
+                                     (reset! cnt 1))))
+                      (reset! str-atom v)
+                      acc)
+                    []
+                    split)]
+    (apply str (apply concat @red)))) 
+

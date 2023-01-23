@@ -1,5 +1,4 @@
-(ns clojure-noob.custom
-  (:require [clojure.string :as str]))
+(ns clojure-noob.custom)
 
 
 
@@ -48,9 +47,9 @@
   ([f coll] (seq (reduce #(conj %1 (f %2)) [] coll)))
   ([f coll & colls]
    (let [colls (cons coll colls)]
-         (custom-map (partial apply f)
-                          (partition (count colls)
-                                     (apply interleave colls))))))
+        (custom-map (partial apply f)
+                    (partition (count colls)
+                               (apply interleave colls))))))
 
 (defn my-reduce-fn
   ([f initial coll]
@@ -164,8 +163,8 @@
 
 (defmacro custom-when
   [test & body]
-     (println body)
-    (list 'if test (cons 'do body)))
+  (println body)
+  (list 'if test (cons 'do body)))
 
 (defmacro custom-cond
   [& clauses]
@@ -225,7 +224,7 @@
   ([f & args]
    (custom-trampoline #(apply f args))))
 
- (defn myfunc [a] (println "doing some work") (+ a 10))
+(defn myfunc [a] (println "doing some work") (+ a 10))
 
 (defn custom-memoize
   [f]
@@ -242,8 +241,8 @@
   (my-reduce 
    (fn [ret x]
      (let [k (f x)]
-       (assoc ret k (conj (get ret k []) x)))
-     )
+       (assoc ret k (conj (get ret k []) x))))
+     
    {} 
    coll))
 
@@ -290,4 +289,35 @@
   ([a b]
    (cons  a (lazy-seq (fibo-example b (+ a b))))))
 
+(defn -map 
+  ([f coll]
+   (reduce (fn [acc v]
+             (conj acc (f v)))
+           []
+           coll))
+  ([f coll & colls]
+   (let [colls (cons coll colls)]
+     (-map (partial apply f) 
+           (partition (count colls)
+                (apply interleave colls)))))) 
 
+(defn -map
+  ([f coll]
+   (reduce (fn [acc v]
+             (conj acc (f v)))
+           []
+           coll))
+  ([f coll & colls]
+   (let [colls (cons coll colls)]
+     (-map (partial apply f)
+           (partition (count colls)
+                      (apply interleave colls))))))
+
+
+(let [s [1 2 3 4 5]]
+  (->> s
+       (map (partial * 2))
+       (repeat 4)
+       (zipmap (range 4))))
+
+ 
