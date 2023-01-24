@@ -325,3 +325,12 @@
   (if (= n 1)
     n
     (* n (-factorial (dec n)))))
+
+(defn -filter
+  [pred coll]
+  (reduce (fn [acc v]
+            (if (pred v)
+              (conj acc v)
+              acc)) 
+          []
+          coll))

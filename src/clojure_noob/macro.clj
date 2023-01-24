@@ -1,5 +1,6 @@
 (ns clojure-noob.macro 
-  (:require [clojure.string :as string]))
+  (:require [clojure.string :as string]
+            [clojure.string :as s]))
 
 (defn criticize-code 
   [criticism code]
@@ -132,5 +133,17 @@ is good code:" good)))
                     []
                    split)]
     (apply str (apply concat @red))))
+
+
+(defn -partition-by
+  [f coll]
+  (lazy-seq (when-let [s (seq coll)]
+              (let [fst (first s)
+                    fv (f fst)
+                    run (cons fst (take-while #(= fv %) (next s)))]
+                (cons run (-partition-by f (drop (count run) s)))))))
   
+(defn -occurance [coll]
+  (apply str (map (fn [x]
+                    (str (count x) (first x))) (-partition-by identity coll))))
 
