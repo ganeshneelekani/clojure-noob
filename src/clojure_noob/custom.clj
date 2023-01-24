@@ -1,4 +1,5 @@
-(ns clojure-noob.custom)
+(ns clojure-noob.custom
+   (:import [java.io File]))
 
 
 
@@ -312,12 +313,15 @@
      (-map (partial apply f)
            (partition (count colls)
                       (apply interleave colls))))))
+(defn -assoc 
+  ([map key val & kvs]
+   (let [ret (assoc map key val)]
+     (if (next kvs)
+       (recur ret (first kvs) (second kvs) (nnext kvs))
+       ret))))
 
-
-(let [s [1 2 3 4 5]]
-  (->> s
-       (map (partial * 2))
-       (repeat 4)
-       (zipmap (range 4))))
-
- 
+(defn -factorial
+  [n] 
+  (if (= n 1)
+    n
+    (* n (-factorial (dec n)))))
